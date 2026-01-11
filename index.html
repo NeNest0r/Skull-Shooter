@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>кс3</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div
+      id="login-screen"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(11, 14, 17, 0.95);
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      "
+    >
+      <h1 style="color: #3498db; margin-bottom: 20px">
+        КС3. Зарегистрироваться.
+      </h1>
+      <input
+        type="text"
+        id="nickname-input"
+        placeholder="Введите ник..."
+        maxlength="12"
+        style="
+          padding: 10px;
+          font-size: 18px;
+          border: 2px solid #3498db;
+          background: #000;
+          color: #fff;
+          outline: none;
+          margin-bottom: 15px;
+        "
+      />
+      <button
+        id="start-game-btn"
+        style="
+          padding: 10px 30px;
+          font-size: 18px;
+          background: #3498db;
+          color: #fff;
+          border: none;
+          cursor: pointer;
+        "
+      >
+        В БОЙ
+      </button>
+    </div>
+
+    <div id="killfeed"></div>
+
+    <div id="awp-scope">
+      <div class="cross-line-h"></div>
+      <div class="cross-line-v"></div>
+      <div class="scope-circle"></div>
+    </div>
+
+    <div id="bottom-hud">
+      <div class="hud-item" id="hp-hud">
+        <span class="hud-label">ЗДОРОВЬЕ</span>
+        <span id="hp-value">100</span>
+      </div>
+      <div class="hud-item" id="ammo-hud">
+        <span id="ammo-current">30</span>
+        <span id="ammo-reserve" class="hud-label">/ 90</span>
+      </div>
+      <div class="hud-item" id="dash-hud">
+        <div id="dash-container">
+          <div id="dash-bar"></div>
+        </div>
+        <span id="dash-status">РЫВОК: ГОТОВ</span>
+      </div>
+    </div>
+
+    <div id="weapon-list">
+      <div id="w-1" class="weapon-item">Desert Eagle</div>
+      <div id="w-2" class="weapon-item">AK-47</div>
+      <div id="w-3" class="weapon-item">AWP</div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+      import {
+        getDatabase,
+        ref,
+        set,
+        onValue,
+        remove,
+        onChildAdded,
+        onChildRemoved,
+        onChildChanged,
+      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyAMB6V9BH1ut3Wy9w_4JtBnN4CGdjqHlqQ",
+        authDomain: "skull-shooter.firebaseapp.com",
+        databaseURL: "https://skull-shooter-default-rtdb.firebaseio.com/",
+        projectId: "skull-shooter",
+        storageBucket: "skull-shooter.firebasestorage.app",
+        appId: "1:777629923934:web:29cf8548a9cb77c15712cf",
+      };
+
+      // Инициализация
+      const app = initializeApp(firebaseConfig);
+      const db = getDatabase(app);
+
+      // Создаем уникальный ID для этой сессии
+      const playerId = "player_" + Math.floor(Math.random() * 1000000);
+
+      // Прокидываем объекты в глобальную видимость для script.js
+      window.db = db;
+      window.playerId = playerId;
+      window.fbOps = {
+        ref,
+        set,
+        onValue,
+        remove,
+        onChildAdded,
+        onChildRemoved,
+        onChildChanged,
+      };
+
+      // Удаляем игрока из базы при закрытии вкладки
+      window.addEventListener("beforeunload", () => {
+        remove(ref(db, "players/" + playerId));
+      });
+    </script>
+    <script src="script.js"></script>
+  </body>
+</html>
